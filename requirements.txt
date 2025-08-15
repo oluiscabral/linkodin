@@ -1,6 +1,6 @@
 openai>=1.30.0
 click==8.1.7
-pydantic==2.10.3
+pydantic==2.11.7
 python-dotenv==1.0.0
 pytest==7.4.4
 pytest-asyncio==0.23.4
