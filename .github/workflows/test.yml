@@ -1,0 +1,128 @@
+name: Test LinkodIn CLI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        exclude:
+          # Reduce matrix size for faster CI
+          - os: windows-latest
+            python-version: '3.8'
+          - os: windows-latest
+            python-version: '3.9'
+          - os: macos-latest
+            python-version: '3.8'
+          - os: macos-latest
+            python-version: '3.9'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install pytest pytest-asyncio
+
+    - name: Run tests
+      run: |
+        pytest tests/ -v --tb=short
+
+    - name: Test CLI functionality
+      run: |
+        linkodin --help
+        linkodin persona --help
+        linkodin post --help
+
+    - name: Test persona management
+      run: |
+        linkodin persona create --id "test-persona" --name "Test Persona" --niche "Testing" --target-audience "Developers" --industry "Technology" --content-themes "testing,quality" --brand-keywords "testing,qa" --tone "professional"
+        linkodin persona list
+        linkodin persona show test-persona
+
+    - name: Test post generation (mock mode)
+      run: |
+        linkodin post generate test-persona --topic "Testing best practices" --mock
+        linkodin post list
+
+    - name: Test cleanup
+      run: |
+        linkodin persona delete test-persona --yes
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install linting dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort mypy
+        pip install -e .
+    
+    - name: Run flake8
+      run: |
+        flake8 src/ tests/ --max-line-length=100 --ignore=E203,W503
+      continue-on-error: true
+    
+    - name: Run black (check only)
+      run: |
+        black --check src/ tests/ --line-length=100
+      continue-on-error: true
+    
+    - name: Run isort (check only)
+      run: |
+        isort --check-only src/ tests/ --line-length=100 --profile black
+      continue-on-error: true
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install security tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety bandit
+        pip install -e .
+    
+    - name: Run safety check
+      run: |
+        safety check
+      continue-on-error: true
+    
+    - name: Run bandit security linter
+      run: |
+        bandit -r src/ -f json -o bandit-report.json
+      continue-on-error: true
+    
+    - name: Upload bandit report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: bandit-report
+        path: bandit-report.json

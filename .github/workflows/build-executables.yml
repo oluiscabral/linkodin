@@ -1,0 +1,103 @@
+name: Build Standalone Executables
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., v1.0.0)'
+        required: true
+        type: string
+  release:
+    types: [published]
+
+jobs:
+  build-executables:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: linkodin-linux
+            asset_name: linkodin-linux-x64
+          - os: windows-latest
+            artifact_name: linkodin.exe
+            asset_name: linkodin-windows-x64.exe
+          - os: macos-latest
+            artifact_name: linkodin
+            asset_name: linkodin-macos-x64
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install pyinstaller
+
+    - name: Build executable with PyInstaller
+      run: |
+        pyinstaller --onefile --name ${{ matrix.artifact_name }} --add-data "src:src" --console src/cli/main.py
+
+    - name: Test executable (Linux/Mac)
+      if: runner.os != 'Windows'
+      run: |
+        ./dist/${{ matrix.artifact_name }} --help
+        ./dist/${{ matrix.artifact_name }} persona --help
+
+    - name: Test executable (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        .\dist\${{ matrix.artifact_name }} --help
+        .\dist\${{ matrix.artifact_name }} persona --help
+
+    - name: Create deployment package
+      shell: bash
+      run: |
+        mkdir -p package
+        cp dist/${{ matrix.artifact_name }} package/${{ matrix.asset_name }}
+        
+        # Create README for the package
+        cat > package/README.txt << EOF
+        LinkodIn CLI - AI-Powered LinkedIn Post Generator
+        ===============================================
+        
+        This is a standalone executable for LinkodIn CLI.
+        
+        Quick Start:
+        1. Make executable (Linux/Mac): chmod +x ${{ matrix.asset_name }}
+        2. Run: ./${{ matrix.asset_name }} --help
+           (Windows): ${{ matrix.asset_name }} --help
+        
+        Create a persona:
+        ./${{ matrix.asset_name }} persona create --id "my-persona" --name "My Name" --niche "My Field" --target-audience "My Audience" --industry "My Industry" --content-themes "theme1,theme2" --brand-keywords "keyword1,keyword2" --tone "professional"
+        
+        Generate a post (demo mode):
+        ./${{ matrix.asset_name }} post generate my-persona --topic "My Topic" --mock
+        
+        For real AI generation, set environment variable:
+        export OPENAI_API_KEY='your-key-here'  # Linux/Mac
+        set OPENAI_API_KEY=your-key-here       # Windows
+        
+        Then generate: ./${{ matrix.asset_name }} post generate my-persona --topic "My Topic"
+        
+        For more information: https://github.com/oluiscabral/linkodin
+        EOF
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.asset_name }}
+        path: package/
+
+    - name: Upload to release (if release event)
+      if: github.event_name == 'release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: package/*
+        token: ${{ secrets.GITHUB_TOKEN }}

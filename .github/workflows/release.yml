@@ -1,0 +1,192 @@
+name: Release LinkodIn CLI
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .
+        pip install pytest pytest-asyncio
+    
+    - name: Run tests
+      run: |
+        pytest tests/ -v
+    
+    - name: Test CLI installation
+      run: |
+        linkodin --help
+        linkodin persona --help
+        linkodin post --help
+
+  build-and-release:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine
+    
+    - name: Extract version from tag or input
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION=${GITHUB_REF#refs/tags/}
+        fi
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "clean_version=${VERSION#v}" >> $GITHUB_OUTPUT
+    
+    - name: Update version in pyproject.toml
+      run: |
+        sed -i 's/version = "0.1.0"/version = "${{ steps.version.outputs.clean_version }}"/' pyproject.toml
+    
+    - name: Build package
+      run: |
+        python -m build
+    
+    - name: Create standalone executable with PyInstaller
+      run: |
+        pip install pyinstaller
+        pyinstaller --onefile --name linkodin --add-data "src:src" src/cli/main.py
+    
+    - name: Test built package
+      run: |
+        pip install dist/*.whl
+        linkodin --help
+    
+    - name: Generate changelog
+      id: changelog
+      run: |
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        if [ -f "CHANGELOG.md" ]; then
+          # Extract current version changelog
+          awk '/^## \[${{ steps.version.outputs.clean_version }}\]/{flag=1;next}/^## \[/{flag=0}flag' CHANGELOG.md || echo "No changelog found for this version"
+        else
+          echo "### Changes in ${{ steps.version.outputs.version }}"
+          echo ""
+          echo "- New release of LinkodIn CLI"
+          echo "- AI-powered LinkedIn post generator"
+          echo "- Three-agent AI system for viral content creation"
+          echo "- Complete persona management"
+          echo "- Mock mode for testing without API key"
+        fi
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        name: LinkodIn CLI ${{ steps.version.outputs.version }}
+        body: |
+          # LinkodIn CLI ${{ steps.version.outputs.version }}
+          
+          ## 🚀 AI-Powered LinkedIn Post Generator
+          
+          LinkodIn uses a sophisticated three-agent AI system to generate viral LinkedIn posts:
+          1. **Market Analysis Agent** - Analyzes trends and crafts optimal prompts
+          2. **Content Generation Agent** - Creates engaging LinkedIn posts  
+          3. **Image Prompt Agent** - Generates compelling image descriptions
+          
+          ## 📦 Installation Options
+          
+          ### Option 1: Install via pip (Recommended)
+          ```bash
+          pip install LinkodIn-${{ steps.version.outputs.clean_version }}-py3-none-any.whl
+          ```
+          
+          ### Option 2: Download standalone executable
+          Download `linkodin` (Linux/Mac) and make it executable:
+          ```bash
+          chmod +x linkodin
+          ./linkodin --help
+          ```
+          
+          ## 🎯 Quick Start
+          
+          ```bash
+          # Create a persona
+          linkodin persona create --id "tech-ceo" --name "Tech CEO" \
+            --niche "Technology Leadership" \
+            --target-audience "Tech professionals" \
+            --industry "Technology" \
+            --content-themes "leadership,innovation" \
+            --brand-keywords "innovation,leadership" \
+            --tone "inspirational"
+          
+          # Generate a post (mock mode - no API key required)
+          linkodin post generate tech-ceo --topic "AI trends" --mock
+          
+          # For real AI generation, set your OpenAI API key:
+          export OPENAI_API_KEY='your-key-here'
+          linkodin post generate tech-ceo --topic "AI trends"
+          ```
+          
+          ## 📋 What's Included
+          
+          - ✅ Complete CLI with persona and post management
+          - ✅ File-based persistent storage
+          - ✅ Mock AI mode for testing without API key
+          - ✅ Real OpenAI GPT integration
+          - ✅ Three-agent AI system for optimal content
+          - ✅ Clean Architecture with full test coverage
+          
+          ## 🔧 Requirements
+          
+          - Python 3.8+ (for pip installation)
+          - OpenAI API key (optional - mock mode works without it)
+          
+          ---
+          
+          ${{ steps.changelog.outputs.changelog }}
+        files: |
+          dist/*.whl
+          dist/*.tar.gz
+          dist/linkodin
+        draft: false
+        prerelease: false
+    
+    - name: Publish to PyPI (if configured)
+      if: env.PYPI_TOKEN != ''
+      env:
+        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+      run: |
+        twine upload dist/*.whl dist/*.tar.gz --username __token__ --password $PYPI_TOKEN
