@@ -1,0 +1,1 @@
+# Entities package - Domain entities for LinkodIn
