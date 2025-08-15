@@ -2,6 +2,10 @@
 """Demo script to showcase LinkodIn functionality."""
 import asyncio
 import os
+import sys
+
+sys.path.insert(0, 'src')
+
 from entities.persona import Persona
 from entities.post import PostGenerationRequest
 from interactors.persona_interactor import PersonaInteractor

@@ -201,3 +201,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# LinkodIn File System Data Access
+personas.json
+posts.json

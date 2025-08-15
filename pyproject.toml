@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "linkodin"
+name = "LinkodIn"
 version = "0.1.0"
-description = "Business logic for LinkodIn - AI-powered LinkedIn post generator"
+description = "AI-powered LinkedIn post generator using advanced multi-agent system"
 authors = [{name = "Developer", email = "dev@example.com"}]
 license = {text = "MIT"}
 readme = "README.md"
@@ -16,7 +16,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-    "openai==1.12.0",
+    "openai>=1.30.0",
     "click==8.1.7",
     "pydantic==2.10.3",
     "python-dotenv==1.0.0",

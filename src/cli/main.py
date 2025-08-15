@@ -9,9 +9,10 @@ from entities.persona import Persona
 from entities.post import PostGenerationRequest
 from interactors.persona_interactor import PersonaInteractor
 from interactors.post_generation_interactor import PostGenerationInteractor
-from infrastructure.in_memory_persona_repository import InMemoryPersonaRepository
-from infrastructure.in_memory_post_repository import InMemoryPostRepository
+from infrastructure.file_persona_repository import FilePersonaRepository
+from infrastructure.file_post_repository import FilePostRepository
 from infrastructure.openai_service import OpenAIService
+from infrastructure.mock_ai_service import MockAIService
 
 # Load environment variables
 load_dotenv()
@@ -24,8 +25,8 @@ def get_dependencies():
     global _dependencies
     
     if _dependencies is None:
-        persona_repo = InMemoryPersonaRepository()
-        post_repo = InMemoryPostRepository()
+        persona_repo = FilePersonaRepository()
+        post_repo = FilePostRepository()
         ai_service = OpenAIService()
         persona_interactor = PersonaInteractor(persona_repo)
         post_interactor = PostGenerationInteractor(persona_repo, post_repo, ai_service)
@@ -149,11 +150,16 @@ def show_persona(persona_id: str):
 
 @persona.command("delete")
 @click.argument("persona_id")
-@click.confirmation_option(prompt="Are you sure you want to delete this persona?")
-def delete_persona(persona_id: str):
+@click.option("--yes", is_flag=True, help="Skip confirmation prompt")
+def delete_persona(persona_id: str, yes: bool):
     """Delete a persona."""
     async def _delete():
         persona_int, _ = get_dependencies()
+        
+        if not yes:
+            if not click.confirm(f"Are you sure you want to delete persona '{persona_id}'?"):
+                click.echo("Delete cancelled.")
+                return
         
         deleted = await persona_int.delete_persona(persona_id)
         if deleted:
@@ -174,16 +180,27 @@ def post():
 @click.argument("persona_id")
 @click.option("--topic", help="Optional topic hint for the post")
 @click.option("--context", help="Additional context for generation")
-def generate_post(persona_id: str, topic: Optional[str], context: Optional[str]):
+@click.option("--mock", is_flag=True, help="Use mock AI service (no API key required)")
+def generate_post(persona_id: str, topic: Optional[str], context: Optional[str], mock: bool):
     """Generate a new LinkedIn post for the specified persona."""
     async def _generate():
-        # Check if OpenAI API key is available
-        if not os.getenv("OPENAI_API_KEY"):
-            click.echo("❌ Error: OPENAI_API_KEY environment variable is not set.", err=True)
-            click.echo("Please set your OpenAI API key: export OPENAI_API_KEY='your-key-here'")
-            return
-        
-        _, post_int = get_dependencies()
+        # Check if using mock or real AI service
+        if mock:
+            # Use mock AI service
+            persona_repo = FilePersonaRepository()
+            post_repo = FilePostRepository()
+            ai_service = MockAIService()
+            persona_interactor = PersonaInteractor(persona_repo)
+            post_interactor = PostGenerationInteractor(persona_repo, post_repo, ai_service)
+        else:
+            # Check if OpenAI API key is available
+            if not os.getenv("OPENAI_API_KEY"):
+                click.echo("❌ Error: OPENAI_API_KEY environment variable is not set.", err=True)
+                click.echo("Please set your OpenAI API key: export OPENAI_API_KEY='your-key-here'")
+                click.echo("Or use --mock flag to generate sample content: linkodin post generate persona-id --mock")
+                return
+            
+            _, post_interactor = get_dependencies()
         
         request = PostGenerationRequest(
             persona_id=persona_id,
@@ -192,14 +209,22 @@ def generate_post(persona_id: str, topic: Optional[str], context: Optional[str])
         )
         
         try:
-            click.echo("🤖 Generating post with AI agents...")
+            if mock:
+                click.echo("🤖 Generating post with Mock AI agents (demo mode)...")
+            else:
+                click.echo("🤖 Generating post with AI agents...")
             click.echo("1️⃣ Market analysis and prompt crafting...")
             
-            post = await post_int.generate_post(request)
+            post = await post_interactor.generate_post(request)
             
             click.echo("2️⃣ Post content generation...")
             click.echo("3️⃣ Image prompt generation...")
-            click.echo("\n✅ Post generated successfully!")
+            
+            if mock:
+                click.echo("\n✅ Demo post generated successfully!")
+            else:
+                click.echo("\n✅ Post generated successfully!")
+            
             click.echo(f"Post ID: {post.id}")
             click.echo(f"\n📝 Content:\n{post.content}")
             
