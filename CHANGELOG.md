@@ -56,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Extensible design for future enhancements
 
 ### Dependencies
-- Python 3.8+
+- Python 3.9+
 - OpenAI API (optional for real AI generation)
 - Click for CLI interface
 - Pydantic for data validation

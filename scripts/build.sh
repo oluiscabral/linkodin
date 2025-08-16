@@ -30,10 +30,19 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# Check Python version
+PYTHON_VERSION=$(python3 -c "import sys; print('.'.join(map(str, sys.version_info[:2])))")
+echo "Python version: $PYTHON_VERSION"
+
+if [[ "$(python3 -c "import sys; print(sys.version_info >= (3, 9))" 2>/dev/null)" != "True" ]]; then
+    print_error "Python 3.9+ is required. Found: $PYTHON_VERSION"
+    exit 1
+fi
+
 # Check if we're in a virtual environment
 if [[ "$VIRTUAL_ENV" == "" ]]; then
     print_warning "Not in a virtual environment. Creating one..."
-    python -m venv build_env
+    python3 -m venv build_env
     source build_env/bin/activate
     print_success "Virtual environment created and activated"
 fi
@@ -111,7 +120,7 @@ echo "🚀 Installing LinkodIn CLI..."
 # Check if Python is available
 if ! command -v python3 &> /dev/null; then
     echo "❌ Python 3 is required but not installed."
-    echo "Please install Python 3.8+ and try again."
+    echo "Please install Python 3.9+ and try again."
     exit 1
 fi
 
@@ -142,7 +151,7 @@ REM Check if Python is available
 python --version >nul 2>&1
 if errorlevel 1 (
     echo ❌ Python 3 is required but not installed.
-    echo Please install Python 3.8+ and try again.
+    echo Please install Python 3.9+ and try again.
     pause
     exit /b 1
 )

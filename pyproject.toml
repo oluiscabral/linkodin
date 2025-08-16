@@ -9,7 +9,7 @@ description = "AI-powered LinkedIn post generator using advanced multi-agent sys
 authors = [{name = "Developer", email = "dev@example.com"}]
 license = {text = "MIT"}
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -17,9 +17,9 @@ classifiers = [
 ]
 dependencies = [
     "openai>=1.30.0",
-    "click==8.1.7",
+    "click==8.1.8",
     "pydantic==2.11.7",
-    "python-dotenv==1.0.0",
+    "python-dotenv==1.1.1",
 ]
 
 [project.optional-dependencies]

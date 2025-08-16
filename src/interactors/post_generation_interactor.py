@@ -1,6 +1,6 @@
 """Post generation use cases."""
 import uuid
-from typing import Optional
+from typing import Optional, List
 from entities.persona import Persona
 from entities.post import LinkedInPost, PostGenerationRequest
 from interactors.interfaces import PersonaRepository, PostRepository, AIService
@@ -71,10 +71,10 @@ class PostGenerationInteractor:
         """Get a post by ID."""
         return await self._post_repository.get_post_by_id(post_id)
     
-    async def get_posts_by_persona(self, persona_id: str) -> list[LinkedInPost]:
+    async def get_posts_by_persona(self, persona_id: str) -> List[LinkedInPost]:
         """Get all posts for a specific persona."""
         return await self._post_repository.get_posts_by_persona(persona_id)
     
-    async def get_all_posts(self) -> list[LinkedInPost]:
+    async def get_all_posts(self) -> List[LinkedInPost]:
         """Get all posts."""
         return await self._post_repository.get_all_posts()

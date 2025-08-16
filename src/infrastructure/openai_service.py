@@ -1,6 +1,6 @@
 """OpenAI GPT-5 implementation of AIService."""
 import os
-from typing import Optional
+from typing import Optional, Tuple
 import openai
 from entities.persona import Persona
 from interactors.interfaces import AIService
@@ -29,7 +29,7 @@ class OpenAIService(AIService):
         persona: Persona, 
         topic_hint: Optional[str], 
         additional_context: Optional[str]
-    ) -> tuple[str, str]:
+    ) -> Tuple[str, str]:
         """
         First agent: Generate deep market analysis and crafted prompt for viral LinkedIn posts.
         """
