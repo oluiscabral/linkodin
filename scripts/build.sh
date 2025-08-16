@@ -120,7 +120,7 @@ echo "🚀 Installing LinkodIn CLI..."
 # Check if Python is available
 if ! command -v python3 &> /dev/null; then
     echo "❌ Python 3 is required but not installed."
-    echo "Please install Python 3.8+ and try again."
+    echo "Please install Python 3.9+ and try again."
     exit 1
 fi
 
@@ -151,7 +151,7 @@ REM Check if Python is available
 python --version >nul 2>&1
 if errorlevel 1 (
     echo ❌ Python 3 is required but not installed.
-    echo Please install Python 3.8+ and try again.
+    echo Please install Python 3.9+ and try again.
     pause
     exit /b 1
 )
