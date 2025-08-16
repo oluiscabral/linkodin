@@ -30,10 +30,19 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# Check Python version
+PYTHON_VERSION=$(python3 -c "import sys; print('.'.join(map(str, sys.version_info[:2])))")
+echo "Python version: $PYTHON_VERSION"
+
+if [[ "$(python3 -c "import sys; print(sys.version_info >= (3, 9))" 2>/dev/null)" != "True" ]]; then
+    print_error "Python 3.9+ is required. Found: $PYTHON_VERSION"
+    exit 1
+fi
+
 # Check if we're in a virtual environment
 if [[ "$VIRTUAL_ENV" == "" ]]; then
     print_warning "Not in a virtual environment. Creating one..."
-    python -m venv build_env
+    python3 -m venv build_env
     source build_env/bin/activate
     print_success "Virtual environment created and activated"
 fi
