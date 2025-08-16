@@ -62,7 +62,7 @@ Examples:
 
 #### Test Workflow (`.github/workflows/test.yml`)
 - Runs on every push and PR
-- Tests across Python 3.8-3.12
+- Tests across Python 3.9-3.12
 - Tests on Ubuntu, Windows, and macOS
 - Includes linting and security checks
 
