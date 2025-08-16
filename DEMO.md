@@ -11,7 +11,7 @@ cd linkodin
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
+# Install dependencies (Python 3.9+ required)
 pip install -e .
 
 # Set up OpenAI API key (required for post generation)

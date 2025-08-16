@@ -1,5 +1,5 @@
 """Mock AI service for testing and demo purposes."""
-from typing import Optional
+from typing import Optional, Tuple
 from entities.persona import Persona
 from interactors.interfaces import AIService
 
@@ -12,7 +12,7 @@ class MockAIService(AIService):
         persona: Persona, 
         topic_hint: Optional[str], 
         additional_context: Optional[str]
-    ) -> tuple[str, str]:
+    ) -> Tuple[str, str]:
         """Generate mock market analysis and prompt."""
         topic = topic_hint or "industry insights"
         

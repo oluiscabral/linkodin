@@ -93,9 +93,9 @@ def create_persona(
         
         try:
             await persona_int.create_persona(persona)
-            click.echo(f"✅ Persona '{name}' created successfully!")
+            click.echo(f"[+] Persona '{name}' created successfully!")
         except ValueError as e:
-            click.echo(f"❌ Error: {e}", err=True)
+            click.echo(f"[!] Error: {e}", err=True)
     
     asyncio.run(_create())
 
@@ -111,9 +111,9 @@ def list_personas():
             click.echo("No personas found.")
             return
         
-        click.echo("\n📋 Available Personas:")
+        click.echo("\n[*] Available Personas:")
         for p in personas:
-            click.echo(f"  • {p.id}: {p.name} ({p.niche})")
+            click.echo(f"  - {p.id}: {p.name} ({p.niche})")
     
     asyncio.run(_list())
 
@@ -127,10 +127,10 @@ def show_persona(persona_id: str):
         
         persona = await persona_int.get_persona(persona_id)
         if not persona:
-            click.echo(f"❌ Persona '{persona_id}' not found.", err=True)
+            click.echo(f"[!] Persona '{persona_id}' not found.", err=True)
             return
         
-        click.echo(f"\n👤 Persona: {persona.name}")
+        click.echo(f"\n[*] Persona: {persona.name}")
         click.echo(f"ID: {persona.id}")
         click.echo(f"Niche: {persona.niche}")
         click.echo(f"Target Audience: {persona.target_audience}")
@@ -163,9 +163,9 @@ def delete_persona(persona_id: str, yes: bool):
         
         deleted = await persona_int.delete_persona(persona_id)
         if deleted:
-            click.echo(f"✅ Persona '{persona_id}' deleted successfully!")
+            click.echo(f"[+] Persona '{persona_id}' deleted successfully!")
         else:
-            click.echo(f"❌ Persona '{persona_id}' not found.", err=True)
+            click.echo(f"[!] Persona '{persona_id}' not found.", err=True)
     
     asyncio.run(_delete())
 
@@ -195,7 +195,7 @@ def generate_post(persona_id: str, topic: Optional[str], context: Optional[str],
         else:
             # Check if OpenAI API key is available
             if not os.getenv("OPENAI_API_KEY"):
-                click.echo("❌ Error: OPENAI_API_KEY environment variable is not set.", err=True)
+                click.echo("[!] Error: OPENAI_API_KEY environment variable is not set.", err=True)
                 click.echo("Please set your OpenAI API key: export OPENAI_API_KEY='your-key-here'")
                 click.echo("Or use --mock flag to generate sample content: linkodin post generate persona-id --mock")
                 return
@@ -210,31 +210,31 @@ def generate_post(persona_id: str, topic: Optional[str], context: Optional[str],
         
         try:
             if mock:
-                click.echo("🤖 Generating post with Mock AI agents (demo mode)...")
+                click.echo("[AI] Generating post with Mock AI agents (demo mode)...")
             else:
-                click.echo("🤖 Generating post with AI agents...")
-            click.echo("1️⃣ Market analysis and prompt crafting...")
+                click.echo("[AI] Generating post with AI agents...")
+            click.echo("[1] Market analysis and prompt crafting...")
             
             post = await post_interactor.generate_post(request)
             
-            click.echo("2️⃣ Post content generation...")
-            click.echo("3️⃣ Image prompt generation...")
+            click.echo("[2] Post content generation...")
+            click.echo("[3] Image prompt generation...")
             
             if mock:
-                click.echo("\n✅ Demo post generated successfully!")
+                click.echo("\n[+] Demo post generated successfully!")
             else:
-                click.echo("\n✅ Post generated successfully!")
+                click.echo("\n[+] Post generated successfully!")
             
             click.echo(f"Post ID: {post.id}")
-            click.echo(f"\n📝 Content:\n{post.content}")
+            click.echo(f"\n[*] Content:\n{post.content}")
             
             if post.image_prompt:
-                click.echo(f"\n🖼️  Image Prompt:\n{post.image_prompt}")
+                click.echo(f"\n[*] Image Prompt:\n{post.image_prompt}")
             
         except ValueError as e:
-            click.echo(f"❌ Error: {e}", err=True)
+            click.echo(f"[!] Error: {e}", err=True)
         except Exception as e:
-            click.echo(f"❌ Unexpected error: {e}", err=True)
+            click.echo(f"[!] Unexpected error: {e}", err=True)
     
     asyncio.run(_generate())
 
@@ -248,17 +248,17 @@ def list_posts(persona: Optional[str]):
         
         if persona:
             posts = await post_int.get_posts_by_persona(persona)
-            click.echo(f"\n📄 Posts for persona '{persona}':")
+            click.echo(f"\n[*] Posts for persona '{persona}':")
         else:
             posts = await post_int.get_all_posts()
-            click.echo("\n📄 All Posts:")
+            click.echo("\n[*] All Posts:")
         
         if not posts:
             click.echo("No posts found.")
             return
         
         for p in posts:
-            click.echo(f"  • {p.id} (Persona: {p.persona_id}) - {p.created_at}")
+            click.echo(f"  - {p.id} (Persona: {p.persona_id}) - {p.created_at}")
     
     asyncio.run(_list())
 
@@ -272,19 +272,19 @@ def show_post(post_id: str):
         
         post = await post_int.get_post(post_id)
         if not post:
-            click.echo(f"❌ Post '{post_id}' not found.", err=True)
+            click.echo(f"[!] Post '{post_id}' not found.", err=True)
             return
         
-        click.echo(f"\n📝 Post: {post.id}")
+        click.echo(f"\n[*] Post: {post.id}")
         click.echo(f"Persona ID: {post.persona_id}")
         click.echo(f"Created: {post.created_at}")
         click.echo(f"\nContent:\n{post.content}")
         
         if post.image_prompt:
-            click.echo(f"\n🖼️  Image Prompt:\n{post.image_prompt}")
+            click.echo(f"\n[*] Image Prompt:\n{post.image_prompt}")
         
         if post.market_analysis:
-            click.echo(f"\n📊 Market Analysis:\n{post.market_analysis}")
+            click.echo(f"\n[*] Market Analysis:\n{post.market_analysis}")
     
     asyncio.run(_show())
 

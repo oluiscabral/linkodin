@@ -1,6 +1,6 @@
 """Interfaces for data access and external services."""
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from entities.persona import Persona
 from entities.post import LinkedInPost
 
@@ -57,7 +57,7 @@ class AIService(ABC):
     """Interface for AI service interactions."""
     
     @abstractmethod
-    async def generate_market_analysis_and_prompt(self, persona: Persona, topic_hint: Optional[str], additional_context: Optional[str]) -> tuple[str, str]:
+    async def generate_market_analysis_and_prompt(self, persona: Persona, topic_hint: Optional[str], additional_context: Optional[str]) -> Tuple[str, str]:
         """
         First agent: Generate market analysis and crafted prompt.
         Returns: (market_analysis, generation_prompt)

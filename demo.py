@@ -80,15 +80,15 @@ async def demo_persona_management():
     persona_interactor = PersonaInteractor(persona_repo)
     
     # Set up demo personas
-    print("📝 Creating demo personas...")
+    print("[*] Creating demo personas...")
     personas = await setup_demo_personas(persona_interactor)
-    print(f"✅ Created {len(personas)} personas\n")
+    print(f"[+] Created {len(personas)} personas\n")
     
     # List all personas
-    print("📋 Available Personas:")
+    print("[*] Available Personas:")
     all_personas = await persona_interactor.list_personas()
     for p in all_personas:
-        print(f"  • {p.id}: {p.name} ({p.niche})")
+        print(f"  - {p.id}: {p.name} ({p.niche})")
     
     print()
     
@@ -132,7 +132,7 @@ async def demo_post_generation():
     
     try:
         post = await post_interactor.generate_post(request)
-        print(f"✅ Post generated successfully!")
+        print(f"[+] Post generated successfully!")
         print(f"Post ID: {post.id}")
         print(f"Content preview: {post.content[:100]}...")
     except ValueError as e:
@@ -189,16 +189,16 @@ async def main():
     # Show CLI usage
     await demo_cli_usage()
     
-    print("\n🎉 Demo completed!")
-    print("\n📚 Key Features:")
-    print("  ✅ Clean Architecture with separate entities, interactors, and infrastructure")
-    print("  ✅ Three-agent AI system for viral LinkedIn post generation")
-    print("  ✅ Comprehensive persona management")
-    print("  ✅ CLI interface for easy interaction")
-    print("  ✅ Extensible design with repository and service patterns")
-    print("  ✅ Full test suite with 38 passing tests")
+    print("\n[*] Demo completed!")
+    print("\n[*] Key Features:")
+    print("  [+] Clean Architecture with separate entities, interactors, and infrastructure")
+    print("  [+] Three-agent AI system for viral LinkedIn post generation")
+    print("  [+] Comprehensive persona management")
+    print("  [+] CLI interface for easy interaction")
+    print("  [+] Extensible design with repository and service patterns")
+    print("  [+] Full test suite with 38 passing tests")
     
-    print("\n🔗 Next Steps:")
+    print("\n[*] Next Steps:")
     print("  1. Set up your OpenAI API key")
     print("  2. Create your personas using the CLI")
     print("  3. Generate viral LinkedIn posts!")
