@@ -22,7 +22,7 @@ class TestInMemoryPersonaRepository:
             name="Test Persona",
             niche="Technology",
             target_audience="Developers",
-            language="English",
+            localization="English (US)",
             tone="professional",
             industry="Tech",
             experience_level="senior",
@@ -62,13 +62,13 @@ class TestInMemoryPersonaRepository:
         """Test getting all personas with multiple personas."""
         persona1 = Persona(
             id="persona-1", name="Persona 1", niche="Tech", target_audience="Developers",
-            language="English", tone="professional", industry="Tech", experience_level="senior",
+            localization="English (US)", tone="professional", industry="Tech", experience_level="senior",
             content_themes=["AI"], engagement_style="storytelling", 
             personal_brand_keywords=["innovation"], posting_frequency="weekly"
         )
         persona2 = Persona(
             id="persona-2", name="Persona 2", niche="Marketing", target_audience="Marketers",
-            language="English", tone="casual", industry="Marketing", experience_level="mid",
+            localization="English (US)", tone="casual", industry="Marketing", experience_level="mid",
             content_themes=["Growth"], engagement_style="data-driven", 
             personal_brand_keywords=["growth"], posting_frequency="daily"
         )

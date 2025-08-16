@@ -11,7 +11,7 @@ class Persona:
     name: str
     niche: str
     target_audience: str
-    language: str
+    localization: str  # Language and regional localization (e.g., "English (US)", "Spanish (Mexico)", "French (Paris)")
     tone: str  # professional, casual, inspirational, etc.
     industry: str
     experience_level: str  # entry, mid, senior, executive
@@ -31,5 +31,5 @@ class Persona:
             raise ValueError("Persona niche cannot be empty")
         if not self.target_audience:
             raise ValueError("Target audience cannot be empty")
-        if not self.language:
-            raise ValueError("Language cannot be empty")
+        if not self.localization:
+            raise ValueError("Localization cannot be empty")

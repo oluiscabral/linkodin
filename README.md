@@ -109,7 +109,7 @@ src/
 The system uses environment variables for configuration:
 
 - `OPENAI_API_KEY`: Your OpenAI API key (required)
-- `OPENAI_MODEL`: Model to use (default: gpt-4)
+- `OPENAI_MODEL`: Model to use (default: gpt-5)
 
 ## Contributing
 

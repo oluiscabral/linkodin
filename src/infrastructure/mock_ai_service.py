@@ -44,7 +44,7 @@ Create a LinkedIn post about "{topic}" that:
 - Incorporates themes from: {', '.join(persona.content_themes)}
 - Uses your brand keywords naturally: {', '.join(persona.personal_brand_keywords)}
 - Targets professionals in {persona.industry}
-- Speaks in {persona.language}
+- Written for {persona.localization} audience
 
 The post should:
 1. Start with a compelling hook that stops scrolling

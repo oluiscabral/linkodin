@@ -56,7 +56,7 @@ def persona():
 @click.option("--name", required=True, help="Persona name")
 @click.option("--niche", required=True, help="Persona niche/expertise area")
 @click.option("--target-audience", required=True, help="Target audience description")
-@click.option("--language", default="English", help="Language for posts")
+@click.option("--localization", default="English (US)", help="Language and regional localization for posts")
 @click.option("--tone", default="professional", help="Tone of voice")
 @click.option("--industry", required=True, help="Industry/sector")
 @click.option("--experience-level", default="senior", help="Experience level")
@@ -66,7 +66,7 @@ def persona():
 @click.option("--posting-frequency", default="weekly", help="Posting frequency")
 @click.option("--description", help="Optional description")
 def create_persona(
-    id: str, name: str, niche: str, target_audience: str, language: str,
+    id: str, name: str, niche: str, target_audience: str, localization: str,
     tone: str, industry: str, experience_level: str, content_themes: str,
     engagement_style: str, brand_keywords: str, posting_frequency: str,
     description: Optional[str]
@@ -80,7 +80,7 @@ def create_persona(
             name=name,
             niche=niche,
             target_audience=target_audience,
-            language=language,
+            localization=localization,
             tone=tone,
             industry=industry,
             experience_level=experience_level,
@@ -134,7 +134,7 @@ def show_persona(persona_id: str):
         click.echo(f"ID: {persona.id}")
         click.echo(f"Niche: {persona.niche}")
         click.echo(f"Target Audience: {persona.target_audience}")
-        click.echo(f"Language: {persona.language}")
+        click.echo(f"Localization: {persona.localization}")
         click.echo(f"Tone: {persona.tone}")
         click.echo(f"Industry: {persona.industry}")
         click.echo(f"Experience Level: {persona.experience_level}")

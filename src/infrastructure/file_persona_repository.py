@@ -38,7 +38,7 @@ class FilePersonaRepository(PersonaRepository):
             'name': persona.name,
             'niche': persona.niche,
             'target_audience': persona.target_audience,
-            'language': persona.language,
+            'localization': persona.localization,
             'tone': persona.tone,
             'industry': persona.industry,
             'experience_level': persona.experience_level,

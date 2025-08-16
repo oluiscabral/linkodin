@@ -9,7 +9,7 @@ from interactors.interfaces import AIService
 class OpenAIService(AIService):
     """OpenAI GPT implementation for AI-powered post generation."""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4"):
+    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-5"):
         """Initialize OpenAI service with API key and model."""
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.model = model
@@ -54,7 +54,7 @@ Persona Details:
 - Name: {persona.name}
 - Niche: {persona.niche}
 - Target Audience: {persona.target_audience}
-- Language: {persona.language}
+- Localization: {persona.localization}
 - Tone: {persona.tone}
 - Industry: {persona.industry}
 - Experience Level: {persona.experience_level}
@@ -104,7 +104,7 @@ Please provide:
         """
         Second agent: Generate viral LinkedIn post content using the first agent's prompt.
         """
-        system_prompt = """You are an elite LinkedIn content creator who writes viral posts that generate massive engagement. You create authentic, attention-grabbing content that the LinkedIn algorithm loves and promotes widely.
+        system_prompt = f"""You are an elite LinkedIn content creator who writes viral posts that generate massive engagement. You create authentic, attention-grabbing content that the LinkedIn algorithm loves and promotes widely.
 
 Your posts should:
 - Hook readers from the first line
@@ -114,6 +114,10 @@ Your posts should:
 - Generate discussions, debates, comments, and shares
 - Match the persona's authentic voice perfectly
 - Use the latest engagement techniques and trends
+- Be written in the localization: {persona.localization}
+- Use language patterns, cultural references, and communication styles appropriate for {persona.localization}
+
+IMPORTANT: Write the entire post in the specified localization ({persona.localization}), including any cultural nuances, regional expressions, or localized terminology that would resonate with the target audience in that region.
 
 Never mention AI, automation, or give any hint that this is AI-generated content."""
 
