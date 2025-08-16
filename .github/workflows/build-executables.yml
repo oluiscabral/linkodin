@@ -1,5 +1,9 @@
 name: Build Standalone Executables
 
+permissions:
+  contents: write
+  packages: write
+
 on:
   workflow_dispatch:
     inputs:
