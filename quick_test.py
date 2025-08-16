@@ -35,16 +35,7 @@ def main():
     run_command(f"{venv_prefix}linkodin persona --help", "Testing persona help")
     
     # Create a test persona
-    create_cmd = f"""{venv_prefix}linkodin persona create \\
-  --id "test-persona" \\
-  --name "Test Persona" \\
-  --niche "Software Development" \\
-  --target-audience "Developers, Tech leads" \\
-  --industry "Technology" \\
-  --content-themes "coding,best practices,career growth" \\
-  --brand-keywords "clean code,software engineering,growth" \\
-  --tone "professional" \\
-  --description "A test persona for development"""
+    create_cmd = f'{venv_prefix}linkodin persona create --id "test-persona" --name "Test Persona" --niche "Software Development" --target-audience "Developers, Tech leads" --industry "Technology" --content-themes "coding,best practices,career growth" --brand-keywords "clean code,software engineering,growth" --tone "professional" --description "A test persona for development"'
     
     if run_command(create_cmd, "Creating a test persona"):
         # List personas
@@ -63,7 +54,7 @@ def main():
         # Clean up - delete test persona
         run_command(f"{venv_prefix}linkodin persona delete test-persona --yes", "Cleaning up test persona")
     
-    print("\n✅ CLI test completed!")
+    print("\n[+] CLI test completed!")
     print("\nTo enable post generation, set your OpenAI API key:")
     print("export OPENAI_API_KEY='your-api-key-here'")
 
