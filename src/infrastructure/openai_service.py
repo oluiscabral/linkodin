@@ -9,12 +9,15 @@ from interactors.interfaces import AIService
 class OpenAIService(AIService):
     """OpenAI GPT implementation for AI-powered post generation."""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-5"):
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         """Initialize OpenAI service with API key and model."""
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
-        self.model = model
+        self.model = model or os.getenv("OPENAI_MODEL", "gpt-5")
         self.client = None
         self._has_real_key = bool(self.api_key)
+        
+        # GPT-5 models have restrictions on temperature parameter
+        self._supports_custom_temperature = not self.model.startswith("gpt-5")
     
     def _get_client(self):
         """Lazy initialization of OpenAI client."""
@@ -77,14 +80,21 @@ Please provide:
 2. GENERATION PROMPT: A detailed, strategic prompt that will consistently generate viral LinkedIn posts for this persona"""
 
         client = self._get_client()
-        response = client.chat.completions.create(
-            model=self.model,
-            messages=[
+        
+        # Build request parameters
+        request_params = {
+            "model": self.model,
+            "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_content}
-            ],
-            temperature=0.8
-        )
+            ]
+        }
+        
+        # Only add temperature for models that support it
+        if self._supports_custom_temperature:
+            request_params["temperature"] = 0.8
+        
+        response = client.chat.completions.create(**request_params)
         
         content = response.choices[0].message.content
         
@@ -122,14 +132,21 @@ IMPORTANT: Write the entire post in the specified localization ({persona.localiz
 Never mention AI, automation, or give any hint that this is AI-generated content."""
 
         client = self._get_client()
-        response = client.chat.completions.create(
-            model=self.model,
-            messages=[
+        
+        # Build request parameters
+        request_params = {
+            "model": self.model,
+            "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": generation_prompt}
-            ],
-            temperature=0.9
-        )
+            ]
+        }
+        
+        # Only add temperature for models that support it
+        if self._supports_custom_temperature:
+            request_params["temperature"] = 0.9
+        
+        response = client.chat.completions.create(**request_params)
         
         return response.choices[0].message.content.strip()
     
@@ -169,13 +186,20 @@ Persona:
 Generate a detailed image prompt that will create the perfect visual companion for this LinkedIn post."""
 
         client = self._get_client()
-        response = client.chat.completions.create(
-            model=self.model,
-            messages=[
+        
+        # Build request parameters
+        request_params = {
+            "model": self.model,
+            "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_content}
-            ],
-            temperature=0.7
-        )
+            ]
+        }
+        
+        # Only add temperature for models that support it
+        if self._supports_custom_temperature:
+            request_params["temperature"] = 0.7
+        
+        response = client.chat.completions.create(**request_params)
         
         return response.choices[0].message.content.strip()

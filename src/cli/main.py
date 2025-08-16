@@ -27,7 +27,9 @@ def get_dependencies():
     if _dependencies is None:
         persona_repo = FilePersonaRepository()
         post_repo = FilePostRepository()
-        ai_service = OpenAIService()
+        # Use GPT-5 by default, with fallback model configuration
+        model = os.getenv("OPENAI_MODEL", "gpt-5")
+        ai_service = OpenAIService(model=model)
         persona_interactor = PersonaInteractor(persona_repo)
         post_interactor = PostGenerationInteractor(persona_repo, post_repo, ai_service)
         
