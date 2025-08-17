@@ -18,7 +18,7 @@ class FilePersonaRepository(PersonaRepository):
             return {}
         
         try:
-            with open(self.file_path, 'r') as f:
+            with open(self.file_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except (json.JSONDecodeError, IOError):
             return {}
@@ -26,8 +26,8 @@ class FilePersonaRepository(PersonaRepository):
     def _save_personas(self, personas: Dict[str, dict]) -> None:
         """Save personas to file."""
         try:
-            with open(self.file_path, 'w') as f:
-                json.dump(personas, f, indent=2)
+            with open(self.file_path, 'w', encoding='utf-8') as f:
+                json.dump(personas, f, indent=2, ensure_ascii=False)
         except IOError:
             pass  # Fail silently for now
     

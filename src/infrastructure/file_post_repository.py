@@ -19,7 +19,7 @@ class FilePostRepository(PostRepository):
             return {}
         
         try:
-            with open(self.file_path, 'r') as f:
+            with open(self.file_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except (json.JSONDecodeError, IOError):
             return {}
@@ -27,8 +27,8 @@ class FilePostRepository(PostRepository):
     def _save_posts(self, posts: Dict[str, dict]) -> None:
         """Save posts to file."""
         try:
-            with open(self.file_path, 'w') as f:
-                json.dump(posts, f, indent=2, default=str)
+            with open(self.file_path, 'w', encoding='utf-8') as f:
+                json.dump(posts, f, indent=2, default=str, ensure_ascii=False)
         except IOError:
             pass  # Fail silently for now
     
