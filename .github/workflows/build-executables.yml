@@ -31,7 +31,7 @@ jobs:
             asset_name: linkodin-macos-x64
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Set up Python
       uses: actions/setup-python@v5
